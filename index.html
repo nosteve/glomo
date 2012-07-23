@@ -90,7 +90,7 @@
 	  ws.onclose = function() { 
 			console.log("closed");
 			if (box == false) {
-				TINY.box.show({html:'Connecting to Websocket',animate:false,close:false,boxid:'error',center:5});
+				TINY.box.show({html:'Connecting to glomo',animate:false,close:false,boxid:'error',center:5});
 				box = true;
 			}
 			setTimeout(function(){connect("ws://" + window.location.hostname + ":8081")}, 5000);
