@@ -1,0 +1,134 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="css/arrows.css" type="text/css" />
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body bgcolor="beige">
+<center>
+
+<p>
+<button id="copy" type="button" onclick="copyFrame()">Copy</button>&nbsp;
+<button id="paste" type="button" onclick="pasteFrame()">Paste</button>&nbsp;
+<button id="pasteall" type="button" onclick="pasteAllFrame()">Paste All</button>
+<br>
+<button id="export" type="button" onclick="exportJSON()">Export JSON</button>&nbsp;
+<button id="import" type="button" onclick="importJSON()">Import JSON</button>&nbsp;
+<button id="save" type="button" onclick="save()">Save to EEPROM</button>&nbsp; 
+</p>
+
+<table>
+<tr>
+
+<td style="padding: 30px;">
+<div id="arrow-left" class="arrow-left" style="-webkit-user-select: none;"></div>
+</td>
+<td>
+
+<div id="content" style="-webkit-user-select: none;">
+
+<script type="text/javascript" src="draw.js"></script>
+<script type="text/javascript" src="jscolor/jscolor.js"></script>
+<script type="text/javascript" src="tinybox.js"></script>
+
+<!--
+<li onclick="TINY.box.show({html:'This is a warning!',animate:false,close:false,boxid:'error',top:5})">No Animation, No  Close Button, Auto Width/Height, Custom Styling</li> 
+-->
+
+<script type="text/javascript">
+	var ws;
+	var box = false;
+	var incoming = false;
+	var pix = [];
+	var maxpix = xpix * ypix * 3;
+	
+	function sleep(ms) {
+	  var startTime = Date.now();
+	  while (Date.now() < startTime + ms);
+	}
+
+	function connect(wsurl) {
+	  //var ws = new WebSocket("ws://" + window.location.hostname + ":8081");
+	  ws = new WebSocket("ws://127.0.0.1:8081");
+	  ws.onopen = function() { 
+	    console.log("connect");
+			sleep(4000);
+			console.log("init");
+			ws.send("L\n");
+			TINY.box.hide();
+			box = false;
+	  };
+	  ws.onmessage = function (evt) { 
+	    console.log(evt.data);
+			if (evt.data.slice(0,2) == "S:") {
+					var i = evt.data.slice(2).split(",");
+					pix[i[0]] = i[1];
+					if (i[0] == maxpix - 1) {
+						console.log("doin it");
+						//Last one, render on screen
+						for (var i=0; i < maxpix; i = i+3) {
+						    var x = parseInt(i / 3) % xpix;
+						    var y = parseInt((i / 3) / xpix);
+						    var r = parseInt(pix[i]);
+						    var g = parseInt(pix[i+1]);
+						    var b = parseInt(pix[i+2]);
+								var color = ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2);
+								console.log("color is " + color);
+						    px[x][y].set(color, false);
+						  }
+					}
+			}
+	  };
+
+	  ws.onclose = function() { 
+			console.log("closed");
+			if (box == false) {
+				TINY.box.show({html:'Connecting to Websocket',animate:false,close:false,boxid:'error',center:5});
+				box = true;
+			}
+			setTimeout(function(){connect("ws://127.0.0.1:8081")}, 5000);
+		};
+	}
+  
+  //Do X on a line, then do br's for Y
+  //Rotating -45 degrees
+  for (var x=xpix-1; x >= 0; x--) {
+    for (var y=ypix-1; y >= 0; y--) {
+      px[x][y] = new PX(x + "_" + y);
+    }
+    var br = document.createElement('br');
+    document.getElementById("content").appendChild(br);
+  }
+
+	TINY.box.show({html:'Connecting to Websocket',animate:false,close:false,boxid:'error',center:5})
+	box = true;
+	connect("ws://127.0.0.1:8081");
+  
+  //document.addEventListener('keydown', key, false);
+</script>
+</td>
+
+<td style="padding: 30px;">
+<div id="arrow-right" class="arrow-right" style="-webkit-user-select: none;"></div>
+</td>
+
+</tr>
+</table>
+
+<p>Click to change color: <input class="color {pickerClosable:true}" value="66ff00" id="color"></p>
+<p><b>SHIFT</b>-click to pick color from picture.</p>
+
+
+<div id="frame" style="font-size: 1000%">1</div>
+<script type="text/javascript">
+  var col = document.getElementById("color");
+  document.getElementById("arrow-left").addEventListener('click', frameDown, false);
+  document.getElementById("arrow-right").addEventListener('click', frameUp, false);
+</script>
+
+
+</div>
+</center>
+</body>
+</html>
