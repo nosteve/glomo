@@ -1,13 +1,20 @@
 var SerialPort = require('serialport').SerialPort;
 var websock = require('websock');
 var connect = require('connect');
-var serialPort = new SerialPort("/dev/tty.usbserial-AH019KLJ");
 var comm = new Array();
 var rdy = true;
 var id = 0;
 var sockets = [];
 var incoming = "";
 var incoming_mode = false;
+var argv = process.argv;
+
+if (!argv[2]) {
+    console.log("Usage:\n node webserial.js serial_port [listen_ip] [websocket_port] [http_port]\n\n");
+    process.exit();
+}
+
+var serialPort = new SerialPort(argv[2]);
 
 function sleep(ms) {
   var startTime = Date.now();
@@ -16,9 +23,9 @@ function sleep(ms) {
 
 connect.createServer(
     connect.static(__dirname)
-).listen(8082);
+).listen(argv[5] || 8082);
 
-websock.listen(8081, function(socket) {
+websock.listen(argv[4] || 8081, function(socket) {
   /* This doesn't work for some reason, do it on first message instead :P
   socket.on("open", function() {
     //Assign unique identifier
@@ -59,7 +66,7 @@ websock.listen(8081, function(socket) {
   });
 });
 
-var sersocket = websock.connect('ws://127.0.0.1:8081', {protocol:8});
+var sersocket = websock.connect("ws://" + (argv[3] || "127.0.0.1") + ":" + (argv[4] || "8081"), {protocol:8});
 
 serialPort.on("data", function (data) {
     //console.log("recv" + data);

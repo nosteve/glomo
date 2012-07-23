@@ -9,22 +9,29 @@
 <center>
 
 <p>
+<!--
 <button id="copy" type="button" onclick="copyFrame()">Copy</button>&nbsp;
 <button id="paste" type="button" onclick="pasteFrame()">Paste</button>&nbsp;
 <button id="pasteall" type="button" onclick="pasteAllFrame()">Paste All</button>
+-->
+
+<button id="save" type="button" onclick="save()">Save to EEPROM</button>&nbsp; 
 <br>
+<!--
 <button id="export" type="button" onclick="exportJSON()">Export JSON</button>&nbsp;
 <button id="import" type="button" onclick="importJSON()">Import JSON</button>&nbsp;
-<button id="save" type="button" onclick="save()">Save to EEPROM</button>&nbsp; 
+-->
 </p>
 
 <table>
 <tr>
 
+<!--
 <td style="padding: 30px;">
 <div id="arrow-left" class="arrow-left" style="-webkit-user-select: none;"></div>
 </td>
 <td>
+-->
 
 <div id="content" style="-webkit-user-select: none;">
 
@@ -49,8 +56,7 @@
 	}
 
 	function connect(wsurl) {
-	  //var ws = new WebSocket("ws://" + window.location.hostname + ":8081");
-	  ws = new WebSocket("ws://127.0.0.1:8081");
+	  ws = new WebSocket("ws://" + window.location.hostname + ":8081");
 	  ws.onopen = function() { 
 	    console.log("connect");
 			sleep(4000);
@@ -87,7 +93,7 @@
 				TINY.box.show({html:'Connecting to Websocket',animate:false,close:false,boxid:'error',center:5});
 				box = true;
 			}
-			setTimeout(function(){connect("ws://127.0.0.1:8081")}, 5000);
+			setTimeout(function(){connect("ws://" + window.location.hostname + ":8081")}, 5000);
 		};
 	}
   
@@ -103,15 +109,17 @@
 
 	TINY.box.show({html:'Connecting to Websocket',animate:false,close:false,boxid:'error',center:5})
 	box = true;
-	connect("ws://127.0.0.1:8081");
+	connect("ws://" + window.location.hostname + ":8081");
   
   //document.addEventListener('keydown', key, false);
 </script>
 </td>
 
+<!--
 <td style="padding: 30px;">
 <div id="arrow-right" class="arrow-right" style="-webkit-user-select: none;"></div>
 </td>
+-->
 
 </tr>
 </table>
@@ -119,8 +127,10 @@
 <p>Click to change color: <input class="color {pickerClosable:true}" value="66ff00" id="color"></p>
 <p><b>SHIFT</b>-click to pick color from picture.</p>
 
-
+<!--
 <div id="frame" style="font-size: 1000%">1</div>
+-->
+
 <script type="text/javascript">
   var col = document.getElementById("color");
   document.getElementById("arrow-left").addEventListener('click', frameDown, false);
