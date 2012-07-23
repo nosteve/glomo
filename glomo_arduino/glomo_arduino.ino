@@ -4,6 +4,7 @@
 #define XMAX 7
 #define YMAX 7
 #define BAUD_RATE 9600
+#define EEPROM_SIZE 1024
 #define SCR_DELAY 100 //ms between screen updates
 #define smillis() ((long)millis())
 
@@ -76,10 +77,22 @@ void setup() {
   unsigned char whiteBalVal[3] = {36,63,63}; // for LEDSEE 6x6cm round matrix
   Colorduino.SetWhiteBal(whiteBalVal);
   
+  //Is EEPROM formatted for glomo?
+  //By default, all values are 255 - we need them to be 0
+  //12 in first byte ensures it's formatted
+  //BTW I think EEPROM(1) doesn't read correctly, at least on my board
+  //Starting with EEPROM 2 for data, 1 for code
+  
+  if (EEPROM.read(1) != 12) {
+    for (int i=2; i < EEPROM_SIZE; i++) {
+      EEPROM.write(i, 0);
+    }
+    EEPROM.write(1, 12);
+  }
   
   //Populate pix array from eeprom
   for (int i=0; i < LEDS*3; i++) {
-    pix[i] = EEPROM.read(i);
+    pix[i] = EEPROM.read(i+2);
   }
   
   //Covert to x,y and light up the LEDs
@@ -105,7 +118,7 @@ void readserial() {
     if (buf == 83) {
       //Write pix to eeprom
       for (int i = 0; i < LEDS*3; i++) {
-        EEPROM.write(i, pix[i]);
+        EEPROM.write(i+2, pix[i]);
         //Serial.print(pix[i]);
         //Serial.print("\n");
       }
