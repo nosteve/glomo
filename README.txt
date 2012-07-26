@@ -4,8 +4,8 @@ LED canvas.
 
 REQUIREMENTS
 
-glomo has been tested with Arduino Duelimove and Uno platforms. It expects a 
-platform with at least 2K of SRAM and 1K of EEPROM, though smaller systems
+glomo has been tested with Arduino Duemilanove and Uno platforms. It expects
+a platform with at least 2K of SRAM and 1K of EEPROM, though smaller systems
 may work as well. At the time of this writing, the software suite works 
 with systems compatible with Node.js, namely Windows, Mac, and Linux
 
